@@ -1,0 +1,48 @@
+COMO SUBIR ESTE PROJETO NO SEU GITHUB
+=====================================
+
+IMPORTANTE:
+Não envie apenas o arquivo .zip para o repositório, pois o GitHub não
+descompacta o projeto automaticamente. Descompacte este arquivo primeiro
+e envie os ARQUIVOS E PASTAS que estão dentro dele.
+
+REPOSITÓRIO:
+https://github.com/felipeandrewpro/Carteira-De-Investimentos
+
+OPÇÃO 1 - PELO SITE DO GITHUB
+-----------------------------
+1. Descompacte Carteira-De-Investimentos-GitHub.zip.
+2. Abra o seu repositório no GitHub.
+3. Clique em "Add file" > "Upload files".
+4. Arraste os arquivos e pastas do projeto descompactado.
+5. Use a mensagem de commit:
+   feat: implementar carteira de investimentos fullstack em Rust
+6. Clique em "Commit changes".
+
+OPÇÃO 2 - PELO TERMINAL
+-----------------------
+1. Descompacte o arquivo.
+2. Abra o terminal dentro da pasta Carteira-De-Investimentos.
+3. Execute:
+
+git init
+git branch -M main
+git remote add origin https://github.com/felipeandrewpro/Carteira-De-Investimentos.git
+git add .
+git commit -m "feat: implementar carteira de investimentos fullstack em Rust"
+git push -u origin main
+
+Se o repositório remoto já tiver arquivos e o push for rejeitado,
+faça um clone do repositório e copie os arquivos deste pacote para
+dentro do clone antes de executar git add/commit/push.
+
+ANTES DE RODAR O PROJETO
+------------------------
+1. Copie .env.example para .env.
+2. Troque JWT_SECRET por uma chave longa.
+3. Execute:
+   docker compose up -d
+4. Execute:
+   cargo run
+5. Acesse:
+   http://localhost:3000

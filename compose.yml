@@ -1,8 +1,8 @@
 services:
   postgres:
-    image: postgres:17-alpine
-    container_name: carteira-investimentos-db
-    restart: unless-stopped
+    image: postgres:16-alpine
+    container_name: postgres_carteira
+    restart: always
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -10,12 +10,12 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - carteira_postgres_data:/var/lib/postgresql/data
+      - pgdata:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d carteira_investimentos"]
       interval: 5s
       timeout: 5s
-      retries: 10
+      retries: 5
 
 volumes:
-  carteira_postgres_data:
+  pgdata:

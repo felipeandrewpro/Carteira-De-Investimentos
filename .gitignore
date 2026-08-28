@@ -1,8 +1,8 @@
 /target
+**/*.rs.bk
+Cargo.lock
 .env
-.DS_Store
-Thumbs.db
-.idea/
-.vscode/
+.env.*
+!.env.example
 *.log
-/.worktrees/
+.DS_Store

@@ -1,225 +1,150 @@
-# Carteira de Investimentos Fullstack com Rust
+# 📊 Carteira de Investimentos Fullstack em Rust
 
-Aplicação web desenvolvida como evolução do desafio **Carteira de Investimentos Fullstack com Rust**, da Digital Innovation One (DIO). O projeto reúne interface web, API REST, autenticação e PostgreSQL em uma única aplicação Rust.
+Uma aplicação completa de gerenciamento e acompanhamento de carteira de investimentos desenvolvida em **Rust**, conectando back-end assíncrono com **Axum**, persistência relacional no **PostgreSQL** via **SQLx**, segurança com **Argon2** e **JWT**, e renderização server-side (SSR) de alta performance com **Askama**.
 
-> Projeto educacional para organização de dados. Não fornece cotações nem recomendações financeiras.
+---
 
-## Funcionalidades
+## 🚀 Tecnologias Utilizadas
 
-- Cadastro, login e logout;
-- Senhas protegidas com Argon2;
-- JWT em cookie HTTP-only ou `Authorization: Bearer`;
-- Dashboard responsivo;
-- Cadastro, listagem, edição e exclusão de ativos;
-- Carteira individual por usuário;
-- Validação de dados e mensagens de erro;
-- Cálculo por posição: `quantidade × preço médio`;
-- Cálculo do patrimônio total investido;
-- API REST protegida;
-- Migrations automáticas do PostgreSQL;
-- Testes automatizados e integração contínua.
+- **Linguagem**: [Rust 2021 Edition](https://www.rust-lang.org/)
+- **Framework Web**: [Axum 0.7](https://github.com/tokio-rs/axum)
+- **Runtime Assíncrono**: [Tokio](https://tokio.rs/)
+- **Banco de Dados**: [PostgreSQL 16](https://www.postgresql.org/) com [Docker Compose](https://docs.docker.com/compose/)
+- **Driver / Migrations**: [SQLx](https://github.com/launchbadge/sqlx) com queries assíncronas e migrations automáticas
+- **Template Engine**: [Askama](https://github.com/djc/askama) (HTML com compilação estática em tempo de build)
+- **Autenticação & Criptografia**: [jsonwebtoken](https://github.com/Keats/rust-jwt) + [Argon2](https://github.com/RustCrypto/password-hashes) + Cookies `HttpOnly`
+- **Serialização**: [Serde](https://serde.rs/) & [serde_json](https://github.com/serde-rs/json)
+- **Interface & Estilização**: CSS Moderno e Responsivo com Dark Theme de alto contraste.
 
-## Melhoria implementada
+---
 
-A base do desafio foi transformada em uma carteira multiusuário completa. Cada ativo possui nome, ticker, tipo, quantidade e preço médio. O dashboard calcula o total de cada posição e o patrimônio consolidado, além de oferecer formulários de criação, edição e exclusão.
+## 🎯 Funcionalidades e Melhorias Implementadas
 
-## Tecnologias
+1. **Autenticação Completa e Segura**:
+   - Cadastro e Login de usuários com hash de senhas via **Argon2**.
+   - Sessão mantida via **JWT** assinado com armazenamento seguro em cookies `HttpOnly` ou cabeçalhos `Authorization: Bearer`.
+   - Isolamento de dados: cada usuário visualiza e gerencia estritamente sua própria carteira.
 
-- Rust 2021, Axum e Tokio;
-- PostgreSQL e SQLx;
-- Askama, HTML e CSS;
-- JSON Web Token (`jsonwebtoken`);
-- Argon2 (`password-auth`);
-- Docker Compose;
-- GitHub Actions.
+2. **Gestão de Ativos (CRUD Completo)**:
+   - Cadastro de ativos: Ações, Fundos Imobiliários (FIIs), ETFs, Criptomoedas, Renda Fixa e BDRs.
+   - Campos de controle: Ticker, Nome, Categoria, Quantidade/Cotas, Preço Médio e Preço Atual de Mercado.
+   - Edição e exclusão dinâmica de posições com confirmação de segurança.
 
-## Estrutura
+3. **Cálculo Automático de Patrimônio & Rentabilidade**:
+   - Valor Total Investido (`quantidade * preço médio`).
+   - Valor Total de Mercado Atual (`quantidade * preço atual`).
+   - Lucro/Prejuízo nominal (R$) e percentual (%) por ativo e consolidado no dashboard.
+   - Cards de métricas financeiras em tempo real.
 
-```text
-.
-├── .github/workflows/ci.yml
+4. **Dupla Interface**:
+   - **Interface Web (SSR)**: Páginas HTML renderizadas de forma ultrarrápida com Askama.
+   - **API RESTful JSON**: Endpoints completos para integração mobile ou front-end SPA.
+
+---
+
+## 📋 Arquitetura do Projeto
+
+```
+carteira-investimentos/
+├── .github/workflows/
+│   └── ci.yml                 # Pipeline CI (fmt, check)
 ├── migrations/
+│   └── 001_create_tables.sql  # Schema SQL do banco de dados
 ├── src/
-│   ├── api.rs
-│   ├── app.rs
-│   ├── auth.rs
-│   ├── config.rs
-│   ├── domain.rs
-│   ├── error.rs
-│   ├── lib.rs
-│   ├── main.rs
-│   ├── models.rs
-│   ├── repository.rs
-│   └── web.rs
-├── static/style.css
-├── templates/
-├── tests/
+│   ├── auth/
+│   │   ├── jwt.rs             # Criptografia, Argon2 e JWT
+│   │   ├── middleware.rs      # Extrator Axum para rotas protegidas
+│   │   └── mod.rs
+│   ├── models/
+│   │   ├── user.rs            # Structs de usuário e DTOs de auth
+│   │   ├── asset.rs           # Structs de ativos e cálculos de carteira
+│   │   └── mod.rs
+│   ├── routes/
+│   │   ├── api.rs             # Rotas da API REST (JSON)
+│   │   ├── web.rs             # Rotas Web (HTML / Askama)
+│   │   └── mod.rs
+│   ├── templates/
+│   │   └── mod.rs             # Structs de templates Askama
+│   ├── config.rs              # Carregamento de variáveis de ambiente
+│   ├── db.rs                  # Pool de conexões SQLx
+│   ├── error.rs               # Tratamento centralizado de erros (AppError)
+│   └── main.rs                # Ponto de entrada e configuração do servidor
+├── static/
+│   └── style.css              # Folha de estilos Dark Theme
+├── templates/                 # Arquivos HTML dos templates Askama
+│   ├── base.html
+│   ├── home.html
+│   ├── login.html
+│   ├── register.html
+│   ├── dashboard.html
+│   ├── asset_form.html
+│   └── asset_edit.html
 ├── .env.example
+├── .gitignore
 ├── Cargo.toml
-└── compose.yml
+├── compose.yml
+└── README.md
 ```
 
-## Como executar
+---
 
-### Pré-requisitos
+## ⚙️ Como Executar o Projeto Localmente
 
-- [Rust estável](https://www.rust-lang.org/tools/install);
-- Docker com Docker Compose.
+### 1. Pré-requisitos
+- [Rust & Cargo](https://rustup.rs/) (versão estável mais recente)
+- [Docker & Docker Compose](https://www.docker.com/)
 
-### 1. Clone e configure
-
+### 2. Clonar o Repositório
 ```bash
 git clone https://github.com/felipeandrewpro/Carteira-De-Investimentos.git
 cd Carteira-De-Investimentos
-cp .env.example .env
 ```
 
-No Windows PowerShell, use `Copy-Item .env.example .env`.
-
-Altere `JWT_SECRET` no `.env` para uma chave aleatória com pelo menos 32 caracteres. O arquivo `.env` não deve ser enviado ao GitHub.
-
-### 2. Inicie o PostgreSQL
-
+### 3. Subir o Banco de Dados PostgreSQL
 ```bash
 docker compose up -d
 ```
 
-Confira a saúde do banco:
-
+### 4. Configurar as Variáveis de Ambiente
+Crie um arquivo `.env` baseado no `.env.example`:
 ```bash
-docker compose ps
+cp .env.example .env
 ```
 
-### 3. Inicie a aplicação
-
+### 5. Compilar e Rodar a Aplicação
 ```bash
 cargo run
 ```
 
-As migrations são aplicadas automaticamente. Abra [http://localhost:3000](http://localhost:3000) e crie uma conta.
+A aplicação estará disponível em:
+👉 **http://localhost:3000**
 
-Para encerrar o banco:
+---
 
-```bash
-docker compose down
-```
+## 📡 Endpoints da API REST
 
-Use `docker compose down -v` somente se também quiser apagar todos os dados locais.
+| Método | Rota | Descrição | Autenticação |
+|---|---|---|---|
+| `POST` | `/api/register` | Cadastra um novo usuário | Pública |
+| `POST` | `/api/login` | Realiza login e retorna token JWT | Pública |
+| `GET` | `/api/me` | Retorna dados do usuário autenticado | Requer JWT |
+| `GET` | `/api/assets` | Lista todos os ativos do usuário | Requer JWT |
+| `POST` | `/api/assets` | Cria um novo ativo na carteira | Requer JWT |
+| `GET` | `/api/assets/:id` | Retorna detalhes de um ativo específico | Requer JWT |
+| `PUT` | `/api/assets/:id` | Atualiza dados de um ativo | Requer JWT |
+| `DELETE` | `/api/assets/:id` | Remove um ativo da carteira | Requer JWT |
+| `GET` | `/api/portfolio/summary` | Retorna o resumo consolidado da carteira | Requer JWT |
 
-## Variáveis de ambiente
+---
 
-| Variável | Finalidade | Padrão no exemplo |
-|---|---|---|
-| `DATABASE_URL` | Conexão PostgreSQL | `postgres://postgres:postgres@localhost:5432/carteira_investimentos` |
-| `JWT_SECRET` | Assinatura dos tokens | Deve ter 32+ caracteres |
-| `COOKIE_SECURE` | Envia cookie apenas por HTTPS | `false` no ambiente local |
-| `APP_HOST` | Endereço do servidor | `127.0.0.1` |
-| `APP_PORT` | Porta HTTP | `3000` |
-| `RUST_LOG` | Nível de logs | `info` |
+## 🎓 Aprendizados no Desafio
 
-Em produção, use HTTPS e `COOKIE_SECURE=true`.
+- Estruturação de projetos em camadas modulares idiomáticas em Rust (`models`, `routes`, `auth`, `templates`).
+- Conexão e execução assíncrona com PostgreSQL usando **SQLx**.
+- Aplicação de boas práticas de segurança: hash salgado de senhas com **Argon2** e tokens **JWT**.
+- Criação de middlewares e extractors no **Axum** para proteger endpoints automaticamente.
+- Renderização server-side com checagem de tipos em tempo de compilação via **Askama**.
+- Configuração de ambiente reproduzível com **Docker Compose** e esteira de CI no **GitHub Actions**.
 
-## Páginas
-
-| Método | Rota | Função |
-|---|---|---|
-| `GET/POST` | `/register` | Cadastro |
-| `GET/POST` | `/login` | Login |
-| `POST` | `/logout` | Logout |
-| `GET` | `/dashboard` | Carteira protegida |
-| `GET/POST` | `/assets/new` | Novo ativo |
-| `GET/POST` | `/assets/{id}/edit` | Editar ativo |
-| `POST` | `/assets/{id}/delete` | Excluir ativo |
-
-## API REST
-
-### Cadastro
-
-```http
-POST /api/auth/register
-Content-Type: application/json
-
-{
-  "username": "felipe",
-  "password": "senha-segura"
-}
-```
-
-### Login
-
-```http
-POST /api/auth/login
-Content-Type: application/json
-
-{
-  "username": "felipe",
-  "password": "senha-segura"
-}
-```
-
-A resposta contém `user_id`, `username` e `token`. Envie o token nas rotas protegidas:
-
-```http
-Authorization: Bearer SEU_TOKEN_JWT
-```
-
-### Ativos
-
-| Método | Rota | Função |
-|---|---|---|
-| `GET` | `/api/assets` | Listar |
-| `POST` | `/api/assets` | Criar |
-| `PUT` | `/api/assets/{uuid}` | Atualizar |
-| `DELETE` | `/api/assets/{uuid}` | Excluir |
-
-Corpo para criação e atualização:
-
-```json
-{
-  "name": "Petrobras PN",
-  "ticker": "PETR4",
-  "asset_type": "Ação",
-  "quantity": 100,
-  "average_price": 38.50
-}
-```
-
-Verificação pública de saúde: `GET /health`.
-
-## Testes e qualidade
-
-```bash
-cargo fmt --all -- --check
-cargo check --all-targets
-cargo test --all-targets
-cargo clippy --all-targets -- -D warnings
-```
-
-Os testes cobrem cálculos, validações, normalização, hash de senha, assinatura JWT, prioridade de Bearer token, rota de saúde, bloqueio de acesso anônimo e renderização da página de login.
-
-## Segurança
-
-- Senhas nunca são salvas em texto puro;
-- JWT possui expiração de 24 horas;
-- Cookies usam `HttpOnly` e `SameSite=Lax`;
-- Ativos são consultados e alterados com `user_id`;
-- SQLx usa parâmetros em todas as consultas;
-- Configurações sensíveis ficam fora do código.
-
-## O que aprendi
-
-- Estruturação de uma aplicação Rust em módulos;
-- Rotas, estados e respostas com Axum;
-- Programação assíncrona com Tokio;
-- SQLx, migrations e relacionamentos no PostgreSQL;
-- Autenticação JWT e hash Argon2;
-- Renderização server-side com Askama;
-- Validações, testes e CI.
-
-## Projeto base
-
-[digitalinnovationone/rust-fullstack-carteira-investimentos](https://github.com/digitalinnovationone/rust-fullstack-carteira-investimentos)
-
-## Licença
-
-MIT — uso educacional.
+---
+Feito com dedicação para o desafio de Rust Fullstack! 🚀
